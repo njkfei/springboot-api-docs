@@ -1,5 +1,6 @@
 package com.niejinkun.springbootgradle.api;
 
+import com.niejinkun.springbootgradle.model.Greeting;
 import com.niejinkun.springbootgradle.model.User;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -7,6 +8,8 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by niejinping on 2016/8/25.
@@ -32,4 +35,11 @@ public class ApiController {
         return "ignore";
     }
 
+    private static final String template = "Hello, %s!";
+    private final AtomicLong counter = new AtomicLong();
+    @RequestMapping(value="/greeting",method=RequestMethod.GET)
+    public Greeting greeting(@RequestParam(value="name", required=false, defaultValue="World") String name) {
+        return new Greeting(counter.incrementAndGet(),
+                String.format(template, name));
+    }
 }
