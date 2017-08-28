@@ -128,3 +128,29 @@ API返回的结果是json格式，因此，需要json格式转换包
 ### 坑2
 API反序列化对象是，必须设置getter/setter
 如果model不设置getter/setter，会返回序列化异常
+
+### 坑3
+```
+Errors
+Hide
+Resolver error at paths./application/appropriate/update.post.parameters.0.schema.$ref
+Could not resolve reference because of: Could not resolve pointer: /definitions/ApplicationAppropriate does not exist in document
+```
+使用@ApiModel注解也不行。
+
+怎么搞，必须要有一个api，通过@RequestBody来展示。这样就ok
+```
+@RequestMapping(value = "/appropriate/update2", method = RequestMethod.PUT,consumes = {"application/json"})
+	@ApiOperation(value = "更新私幕适当性管理信息")
+	public ApiResult updateAppropriate2( @RequestBody ApplicationAppropriate applicationAppropriate) {
+		log.info("ProductController.updateAppropriate {}",applicationAppropriate);
+		try {
+			applicationAppropriate.setOperateAt(System.currentTimeMillis());
+			applicationAppropriateService.update(applicationAppropriate);
+			return  ApiResult.builder().code(Const.SUCCESS_CODE).message(Const.SUCCESS_MSG).build();
+		}  catch (Exception e) {
+			log.error("ProductController.updateAppropriate_pz error",e);
+			return  ApiResult.builder().code(Const.FAILURE_CODE).message(Const.FAILURE_MSG).data(e.getMessage()).build();
+		}
+
+```
